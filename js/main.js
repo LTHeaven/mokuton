@@ -15,7 +15,7 @@ let lastTimestamp = + new Date();
 
 let updateProgress = function () {
     for (let i = 0; i < dividerWidths.length; i++){
-        width = dividerWidths[i];
+        let width = dividerWidths[i];
         color = colors[i];
         $("#color-bar-" + i).css("background-color", color);
         $("#color-bar-" + i).css("width", width + "%");
@@ -93,38 +93,35 @@ let editPixel = function(x, y, r, g, b, src){
 };
 
 let woodifyFormatted = function() {
-    let currentTimestamp = + new Date();
-    let diff = currentTimestamp - lastTimestamp
-    if(diff > 1000){
-        lastTimestamp = currentTimestamp;
-        console.log(diff,currentTimestamp);
-        woodenMat = new cv.Mat();
-        cv.cvtColor(formattedMat, woodenMat, cv.COLOR_GRAY2RGB);
-        let addedDividerWidths = [];
-        let previous = 0;
-        for (let i = 0; i < 5; i++){
-            addedDividerWidths[i] = previous;
-            previous += dividerWidths[i];
-        }
-        for (let x = 0; x < width; x++){
-            for(let y = 0; y < height; y++){
-                grayscaleValue = (formattedMat.data[y * formattedMat.cols + x]/256)*100;
-                let index = -1;
-                for (let i = 0; i < 5; i++){
-                    if (grayscaleValue >= addedDividerWidths[i] && (i == 4 || grayscaleValue < addedDividerWidths[i+1])){
-                        index = i;
-                    }
-                }
-                let rgb = hexToRgb(colors[index]);
-                editPixel(x, y, rgb.r, rgb.g, rgb.b, woodenMat);
-            }
-        }
-        showImageScaled("woodenCanvas", woodenMat);
+    woodenMat = new cv.Mat();
+    cv.cvtColor(formattedMat, woodenMat, cv.COLOR_GRAY2RGB);
+    let addedDividerWidths = [];
+    let previous = 0;
+    for (let i = 0; i < 5; i++){
+        addedDividerWidths[i] = previous;
+        previous += dividerWidths[i];
     }
+    for (let x = 0; x < width; x++){
+        for(let y = 0; y < height; y++){
+            grayscaleValue = (formattedMat.data[y * formattedMat.cols + x]/256)*100;
+            let index = -1;
+            for (let i = 0; i < 5; i++){
+                if (grayscaleValue >= addedDividerWidths[i] && (i == 4 || grayscaleValue < addedDividerWidths[i+1])){
+                    index = i;
+                }
+            }
+            let rgb = hexToRgb(colors[index]);
+            editPixel(x, y, rgb.r, rgb.g, rgb.b, woodenMat);
+        }
+    }
+    showImageScaled("woodenCanvas", woodenMat);
 };
 
 $(document).mousemove(function (event) {
-    if (mousedown){
+    let currentTimestamp = + new Date();
+    let diff = currentTimestamp - lastTimestamp;
+    if (mousedown && diff > 100){
+        lastTimestamp = currentTimestamp;
         let completePercentage = getCompletePercentage(event);
         if (lastPercentage != completePercentage){
             let offsetDistance = 0;
