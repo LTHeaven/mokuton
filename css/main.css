@@ -1,0 +1,15 @@
+.row{
+    margin-top: 20px;
+}
+
+canvas{
+    width: 100%;
+}
+
+#histogramCanvas{
+    /*height: 100px;*/
+}
+
+.progress{
+    height: 30px;
+}
