@@ -10,6 +10,24 @@ canvas{
     /*height: 100px;*/
 }
 
+.badge-wallnut{
+    background-color: #7b5a49;
+}
+.badge-cherry{
+    background-color: #9a5a31;
+}
+.badge-pear{
+    background-color: #bf8e65;
+}
+.badge-poplar{
+    background-color: #e4ac73;
+    color: #000000;
+}
+.badge-maple{
+    background-color: #f2d2b0;
+    color: #000000;
+}
+
 .progress{
     height: 30px;
 }

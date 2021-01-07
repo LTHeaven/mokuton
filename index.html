@@ -50,7 +50,16 @@
                             <div class="row">
                                 <div class="col">
                                     <img style="padding: auto" width="100%" height="auto" id="image" src="img/placeholder.png" />
-                                    <div class="caption">Upload Image: <input type="file" id="fileInput" name="file" /></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="fileInput" name="file">
+                                        <label class="custom-file-label" for="fileInput">
+                                            Upload Image
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -95,6 +104,17 @@
                     </div>
                     <div class="row">
                         <div class="col">
+                            <div class="bs-component">
+                                <span class="badge badge-wallnut">Wallnut</span>
+                                <span class="badge badge-cherry">Cherry</span>
+                                <span class="badge badge-pear">Pearwood</span>
+                                <span class="badge badge-poplar">Poplar</span>
+                                <span class="badge badge-maple">Maple</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
                             <div class="form-group">
                                 <fieldset>
                                     <label class="col-form-label" for="pixelImageWidth">Width</label>
@@ -105,6 +125,14 @@
                                     <input type="number" class="form-control" readonly placeholder="Height" id="pixelImageHeight" value="138">
                                 </fieldset>
                             </div>
+                            <p class="bs-component">
+                                <button style="width: 100%;" type="button" class="btn btn-primary btn-lg" onclick="onPreviewButtonClick()">Preview Wood Render</button>
+                                <img id="woodtypeCanvas-0" src="./img/woods/0.png"/>
+                                <img id="woodtypeCanvas-1" src="./img/woods/1.png"/>
+                                <img id="woodtypeCanvas-2" src="./img/woods/2.png"/>
+                                <img id="woodtypeCanvas-3" src="./img/woods/3.png"/>
+                                <img id="woodtypeCanvas-4" src="./img/woods/4.png"/>
+                            </p>
                         </div>
                     </div>
                 </div>

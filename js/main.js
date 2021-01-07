@@ -1,6 +1,11 @@
 let DISPLAY_WIDTH = 1050;
 let dividerWidths = [20,20,20,20,20];
-let colors = ["#7b5a49", "#9a5a31", "#bf8e65", "#e4ac73", "#f2d2b0"];
+let colors = [
+    "#7b5a49", //walnut
+    "#9a5a31", //cherry
+    "#bf8e65", //pearwood
+    "#e4ac73", //poplar
+    "#f2d2b0"];//maple
 let width = 40;
 let height = 100;
 let originalMat;
@@ -13,25 +18,9 @@ let nearestDivider = -1;
 let lastPercentage = -1;
 let lastTimestamp = + new Date();
 
-let updateProgress = function () {
-    for (let i = 0; i < dividerWidths.length; i++){
-        let width = dividerWidths[i];
-        color = colors[i];
-        $("#color-bar-" + i).css("background-color", color);
-        $("#color-bar-" + i).css("width", width + "%");
-    }
-};
+updateProgress();
 
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
-
-let getCompletePercentage = function(event) {
+function getCompletePercentage(event) {
     let colorDistBar = $("#color-dist");
     let offsetX = colorDistBar.first().offset().left;
     let width = colorDistBar.width();
@@ -39,21 +28,13 @@ let getCompletePercentage = function(event) {
     return percentage;
 };
 
-let updateWidthHeight = function(){
+function updateWidthHeight(){
     width = parseInt($("#pixelImageWidth").val());
     height = Math.round(originalMat.rows/originalMat.cols*width);
     $("#pixelImageHeight").val(height);
 };
 
-let showImageScaled = function(canvas, mat){
-    let scaledMat = new cv.Mat();
-    ratio = mat.rows/mat.cols;
-    cv.resize(mat, scaledMat, new cv.Size(DISPLAY_WIDTH, Math.round(DISPLAY_WIDTH*ratio)), 0, 0, cv.INTER_NEAREST);
-    cv.imshow(canvas, scaledMat);
-    scaledMat.delete();
-};
-
-let generateHistogram = function(){
+function generateHistogram(){
     let srcVec = new cv.MatVector();
     srcVec.push_back(formattedMat);
     hist = new cv.Mat();
@@ -77,7 +58,33 @@ let generateHistogram = function(){
     showImageScaled("histogramCanvas", dst);
 };
 
-let formatOriginal = function(){
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function updateProgress() {
+    for (let i = 0; i < dividerWidths.length; i++){
+        let width = dividerWidths[i];
+        let color = colors[i];
+        $("#color-bar-" + i).css("background-color", color);
+        $("#color-bar-" + i).css("width", width + "%");
+    }
+};
+
+function showImageScaled(canvas, mat){
+    let scaledMat = new cv.Mat();
+    let ratio = mat.rows/mat.cols;
+    cv.resize(mat, scaledMat, new cv.Size(DISPLAY_WIDTH, Math.round(DISPLAY_WIDTH*ratio)), 0, 0, cv.INTER_NEAREST);
+    cv.imshow(canvas, scaledMat);
+    scaledMat.delete();
+};
+
+function formatOriginal(){
     updateWidthHeight();
     formattedMat = new cv.Mat();
     cv.cvtColor(originalMat, formattedMat, cv.COLOR_RGBA2GRAY);
@@ -86,13 +93,42 @@ let formatOriginal = function(){
     generateHistogram();
 };
 
-let editPixel = function(x, y, r, g, b, src){
+function editPixel(x, y, r, g, b, src){
     let R = src.data[y * src.cols * src.channels() + x * src.channels()] = r;
     let G = src.data[y * src.cols * src.channels() + x * src.channels() + 1] = g;
     let B = src.data[y * src.cols * src.channels() + x * src.channels() + 2] = b;
 };
 
-let woodifyFormatted = function() {
+function generatePreviewImage(woodtypeData) {
+    let woodImages = [];
+    // for(let i = 0; i < 5; i++){
+    //     let canvas = $("#woodtypeCanvas-" + i)[0];
+    //     let ctx = canvas.getContext("2d");
+    //     let img = new Image();
+    //     img.crossOrigin = "anonymous";
+    //     img.onload = () => {
+    //         canvas.width = img.width;
+    //         canvas.height = img.height;
+    //         ctx.drawImage(img, 0, 0, img.width, img.height);
+    //     };
+    //     img.src = "img/woods/" + i + ".png";
+    // }
+    // $("#woodtypeImg-4").load(function () {
+        for(let i = 0; i < 5; i++){
+            woodImages[i] = cv.imread($("#woodtypeCanvas-" + i)[0]);
+        }
+        let previewMat = new cv.Mat(woodtypeData.height*50, woodtypeData.width*50, cv.CV_8UC4, new cv.Scalar(0,0,0,0));
+        for (let x = 0; x < woodtypeData.width; x++){
+            for (let y = 0; y < woodtypeData.height; y++){
+                woodImages[woodtypeData.data[x][y]].copyTo(previewMat.rowRange(y*50, (y+1)*50).colRange(x*50, (x+1)*50));
+            }
+        }
+        showImageScaled("woodenCanvas", previewMat);
+
+    // });
+}
+
+function woodifyFormatted() {
     woodenMat = new cv.Mat();
     cv.cvtColor(formattedMat, woodenMat, cv.COLOR_GRAY2RGB);
     let addedDividerWidths = [];
@@ -101,9 +137,15 @@ let woodifyFormatted = function() {
         addedDividerWidths[i] = previous;
         previous += dividerWidths[i];
     }
+    let woodtypeData = {
+        width: width,
+        height: height,
+        data: []
+    };
     for (let x = 0; x < width; x++){
+        let row = [];
         for(let y = 0; y < height; y++){
-            grayscaleValue = (formattedMat.data[y * formattedMat.cols + x]/256)*100;
+            let grayscaleValue = (formattedMat.data[y * formattedMat.cols + x]/256)*100;
             let index = -1;
             for (let i = 0; i < 5; i++){
                 if (grayscaleValue >= addedDividerWidths[i] && (i == 4 || grayscaleValue < addedDividerWidths[i+1])){
@@ -111,11 +153,23 @@ let woodifyFormatted = function() {
                 }
             }
             let rgb = hexToRgb(colors[index]);
+            row.push(index);
             editPixel(x, y, rgb.r, rgb.g, rgb.b, woodenMat);
         }
+        woodtypeData.data.push(row);
     }
     showImageScaled("woodenCanvas", woodenMat);
+    generatePreviewImage(woodtypeData);
 };
+
+
+function loadImage(url) {
+    $("#image").attr("src", url);
+    $("#nav-link-formatted").removeClass("disabled");
+    $("#nav-link-wooden").removeClass("disabled");
+}
+
+//Events and button click functions
 
 $(document).mousemove(function (event) {
     let currentTimestamp = + new Date();
@@ -146,6 +200,10 @@ $(document).mousemove(function (event) {
     }
 });
 
+$(document).mouseup(function () {
+    mousedown = false;
+});
+
 $("#color-dist-row").mousedown(function (event) {
     let smallestDistance = 100;
     let addedDistance = 0;
@@ -161,14 +219,8 @@ $("#color-dist-row").mousedown(function (event) {
     mousedown = true;
 });
 
-$(document).mouseup(function () {
-    mousedown = false;
-});
-
 $("#fileInput").change(function (e) {
-    $("#image").attr("src", URL.createObjectURL(e.target.files[0]));
-    $("#nav-link-formatted").removeClass("disabled");
-    $("#nav-link-wooden").removeClass("disabled");
+    loadImage(URL.createObjectURL(e.target.files[0]));
 });
 
 $("#pixelImageWidth").change(function () {
@@ -184,5 +236,6 @@ $("#image").load(function (e) {
     woodifyFormatted();
 });
 
-
-updateProgress();
+function onPreviewButtonClick(){
+    console.log("click!")
+}
