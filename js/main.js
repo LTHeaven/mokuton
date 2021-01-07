@@ -115,6 +115,11 @@ function generatePreviewImage(woodtypeData) {
     cv.imshow("previewImage", previewMat);
 }
 
+$("#previewImage").load(function () {
+    let $previewImage = $("#previewImage");
+    window.open($previewImage.src(),'Image','width=' + $previewImage.width + ',height=' + $previewImage.height + ',resizable=1');
+});
+
 function woodifyFormatted() {
     woodenMat = new cv.Mat();
     cv.cvtColor(formattedMat, woodenMat, cv.COLOR_GRAY2RGB);
