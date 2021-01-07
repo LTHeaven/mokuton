@@ -100,19 +100,19 @@ function editPixel(x, y, r, g, b, src){
 };
 
 function generatePreviewImage(woodtypeData) {
-    let woodImages = [];
-    for(let i = 0; i < 5; i++){
-        woodImages[i] = cv.imread($("#woodtypeCanvas-" + i)[0]);
-    }
-    let previewMat = new cv.Mat(woodtypeData.height*50, woodtypeData.width*50, cv.CV_8UC4, new cv.Scalar(0,0,0,0));
-    for (let x = 0; x < woodtypeData.width; x++){
-        for (let y = 0; y < woodtypeData.height; y++){
-            woodImages[woodtypeData.data[x][y]].copyTo(previewMat.rowRange(y*50, (y+1)*50).colRange(x*50, (x+1)*50));
-        }
-    }
-    $("#previewImage").width(woodtypeData.width*50);
-    $("#previewImage").height(woodtypeData.height*50);
-    cv.imshow("previewImage", previewMat);
+    // let woodImages = [];
+    // for(let i = 0; i < 5; i++){
+    //     woodImages[i] = cv.imread($("#woodtypeCanvas-" + i)[0]);
+    // }
+    // let previewMat = new cv.Mat(woodtypeData.height*50, woodtypeData.width*50, cv.CV_8UC4, new cv.Scalar(0,0,0,0));
+    // for (let x = 0; x < woodtypeData.width; x++){
+    //     for (let y = 0; y < woodtypeData.height; y++){
+    //         woodImages[woodtypeData.data[x][y]].copyTo(previewMat.rowRange(y*50, (y+1)*50).colRange(x*50, (x+1)*50));
+    //     }
+    // }
+    // $("#previewImage").width(woodtypeData.width*50);
+    // $("#previewImage").height(woodtypeData.height*50);
+    // cv.imshow("previewImage", previewMat);
 }
 
 $("#previewImage").load(function () {
