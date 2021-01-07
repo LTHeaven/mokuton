@@ -110,6 +110,8 @@ function generatePreviewImage(woodtypeData) {
             woodImages[woodtypeData.data[x][y]].copyTo(previewMat.rowRange(y*50, (y+1)*50).colRange(x*50, (x+1)*50));
         }
     }
+    $("#previewImage").width(woodtypeData.width*50);
+    $("#previewImage").height(woodtypeData.height*50);
     cv.imshow("previewImage", previewMat);
 }
 
