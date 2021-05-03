@@ -58,6 +58,18 @@ function generateHistogram(){
     showImageScaled("histogramCanvas", dst);
 };
 
+function updatePixelNumbers(woodTypeData){
+    amounts = [0,0,0,0,0];
+    woodTypeData.data.forEach((row) => {
+        row.forEach((pixel) => {
+            amounts[pixel] += 1;
+        });
+    });
+    for (let i = 0; i < 5; i++){
+        $("#pixelAmount" + (i+1)).text(amounts[i]);
+    }
+}
+
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -152,6 +164,7 @@ function woodifyFormatted() {
     }
     showImageScaled("woodenCanvas", woodenMat);
     generatePreviewImage(woodtypeData);
+    updatePixelNumbers(woodtypeData);
 };
 
 
