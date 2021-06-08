@@ -1,5 +1,6 @@
 let DISPLAY_WIDTH = 1050;
 let dividerWidths = [20,20,20,20,20];
+let BLENDFACTOR = 0.05;
 let colors = [
     "#7b5a49", //walnut
     "#9a5a31", //cherry
@@ -156,6 +157,19 @@ function woodifyFormatted() {
                     index = i;
                 }
             }
+            if ($("#blend")[0].checked){
+                let currentWidth = addedDividerWidths[index] - index != 0 ?  addedDividerWidths[index-1] : 0;
+                let valueInSector = grayscaleValue - addedDividerWidths[index];
+                let blendingFactor = valueInSector / currentWidth;
+                let lowerBlend = blendingFactor < BLENDFACTOR && index != 0;
+                let upperBlend = blendingFactor > 1-BLENDFACTOR && index != 4;
+                // console.log(blendingFactor, lowerBlend, upperBlend);
+                if (lowerBlend || upperBlend){
+                    if((x%2)^(y%2)){
+                        index += lowerBlend ? -1 : 1;
+                    }
+                }
+            }
             let rgb = hexToRgb(colors[index]);
             row.push(index);
             editPixel(x, y, rgb.r, rgb.g, rgb.b, woodenMat);
@@ -229,6 +243,13 @@ $("#fileInput").change(function (e) {
 });
 
 $("#pixelImageWidth").change(function () {
+    if (originalMat != undefined){
+        formatOriginal();
+        woodifyFormatted();
+    }
+});
+
+$("#blend").change(function () {
     if (originalMat != undefined){
         formatOriginal();
         woodifyFormatted();
